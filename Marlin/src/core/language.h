@@ -310,7 +310,7 @@
 // Endstop Names used by Endstops::report_states
 //
 #define STR_X_MIN                           "x_min"
-#define STR_X_MAX                           "x_max"
+#define STR_X_MAX                           "conductive"
 #define STR_X2_MIN                          "x2_min"
 #define STR_X2_MAX                          "x2_max"
 

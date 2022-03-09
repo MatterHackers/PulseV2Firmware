@@ -495,7 +495,7 @@ static void print_es_state(const bool is_hit, FSTR_P const flabel=nullptr) {
 #pragma GCC diagnostic pop
 
 void _O2 Endstops::report_states() {
-  TERN_(BLTOUCH, bltouch._set_SW_mode());
+  // TERN_(BLTOUCH, bltouch._set_SW_mode());
   SERIAL_ECHOLNPGM(STR_M119_REPORT);
   #define ES_REPORT(S) print_es_state(READ(S##_PIN) != S##_ENDSTOP_INVERTING, F(STR_##S))
   #if HAS_X_MIN
@@ -507,9 +507,9 @@ void _O2 Endstops::report_states() {
   #if HAS_X_MAX
     ES_REPORT(X_MAX);
   #endif
-  #if HAS_X2_MAX
-    ES_REPORT(X2_MAX);
-  #endif
+  // #if ENABLED(USE_XMAX_PLUG)
+    // ES_REPORT(X_MAX);
+  // #endif
   #if HAS_Y_MIN
     ES_REPORT(Y_MIN);
   #endif

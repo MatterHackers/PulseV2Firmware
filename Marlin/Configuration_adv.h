@@ -493,17 +493,28 @@
 
 #if BoardPlatform == 2
   #define E0_AUTO_FAN_PIN P0_26
-  #define FAN_MAX_PWM 90
-  #define EXTRUDER_AUTO_FAN_SPEED 90   // 255 == full speed
+  #define FAN_MAX_PWM 255
+  #define EXTRUDER_AUTO_FAN_SPEED 255   // 255 == full speed
   #define CHAMBER_AUTO_FAN_TEMPERATURE 30
   #define CHAMBER_AUTO_FAN_SPEED 255 
 #endif
 
-#if BoardPlatform == 3
+#if BoardPlatform == 3 && Fan5v == 1
   //#define E0_AUTO_FAN_PIN P1_00
-  #define FAN_MAX_PWM 100
+  #define FAN_MAX_PWM 75
   #define EXTRUDER_AUTO_FAN_SPEED 255   // 255 == full speed
 #endif
+
+#if BoardPlatform == 3 && Fan5v == 0
+  //#define E0_AUTO_FAN_PIN P1_00
+  #define FAN_MAX_PWM 255
+  #define EXTRUDER_AUTO_FAN_SPEED 255   // 255 == full speed
+#endif
+
+// #if DualExtrusion == 1
+//   #define E1_AUTO_FAN_PIN P2_03
+// #endif
+
 
 #define E1_AUTO_FAN_PIN -1
 #define E2_AUTO_FAN_PIN -1
@@ -649,7 +660,7 @@
 #if IndependentZMotors == 1
   #define NUM_Z_STEPPER_DRIVERS 2   // (1-4) Z options change based on how many
 #else 
-  #define NUM_Z_STEPPER_DRIVERS 2
+  #define NUM_Z_STEPPER_DRIVERS 1
 #endif
 
 #if NUM_Z_STEPPER_DRIVERS > 1
@@ -1961,11 +1972,13 @@
  * probe points will follow. This prevents any change from causing
  * the probe to be unable to reach any points.
  */
-#if PROBE_SELECTED && !IS_KINEMATIC
-  //#define PROBING_MARGIN_LEFT PROBING_MARGIN
-  //#define PROBING_MARGIN_RIGHT PROBING_MARGIN
-  //#define PROBING_MARGIN_FRONT PROBING_MARGIN
-  //#define PROBING_MARGIN_BACK PROBING_MARGIN
+#if ConductiveBedProbe == 1
+  #if PROBE_SELECTED && !IS_KINEMATIC
+    #define PROBING_MARGIN_LEFT PROBING_MARGIN
+    #define PROBING_MARGIN_RIGHT PROBING_MARGIN
+    #define PROBING_MARGIN_FRONT PROBING_MARGIN
+    #define PROBING_MARGIN_BACK PROBING_MARGIN
+  #endif
 #endif
 
 #if EITHER(MESH_BED_LEVELING, AUTO_BED_LEVELING_UBL)
@@ -2720,7 +2733,13 @@
     #define Z2_MICROSTEPS     16
     #define Z2_RSENSE         0.11 
     #define Z2_CHAIN_POS      -1
-  #endif  
+  #endif
+  #if DualExtrusion == 1
+    #define E1_CURRENT        E0_CURRENT
+    #define E1_MICROSTEPS     16
+    #define E1_RSENSE         0.11 
+    #define E1_CHAIN_POS      -1
+  #endif
 #endif
   /**
    * Override default SPI pins for TMC2130, TMC2160, TMC2660, TMC5130 and TMC5160 drivers here.
@@ -2883,13 +2902,18 @@
     #define HYBRID_THRESHOLD
   #endif
 
+#ifdef HYBRID_THRESHOLD
   #define X_HYBRID_THRESHOLD     100  // [mm/s]
   #define Y_HYBRID_THRESHOLD     100
   #define Z_HYBRID_THRESHOLD      25
   #define E0_HYBRID_THRESHOLD      5
+#endif  
 
 #if IndependentZMotors == 1
   #define Z2_HYBRID_THRESHOLD      25
+#endif
+#if DualExtrusion == 1
+  #define E1_HYBRID_THRESHOLD      5
 #endif
 
   /**

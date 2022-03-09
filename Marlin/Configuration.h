@@ -27,13 +27,15 @@
 
 #define BoardPlatform   3    // 1 = Einsy RAMBo, 2 = Azteeg X5 GT 3 = SKR Turbo
 #define ExtruderType    4    // 1 = EZR, 2 = Bondtech QR 1.75mm, 3 = Bondtech QR 3mm, 4 = Bondtech BMG, 5 = LDO Orbiter 1.75mm, 6 = Bondtech LGX
-#define HotEndType      4    // 1 = E3D Lite6, 2 = E3Dv6 , 3 = E3D Volcano, 4 = Mosquito, 5 = Mosquito Magnum, 6 = LGX Mosquito
-#define LCDType         4    // 1 = None, 2 = RepRapLCD, 3 = Viki2, 4 = Mini 1864
+#define HotEndType      2    // 1 = E3D Lite6, 2 = E3Dv6 , 3 = E3D Volcano, 4 = Mosquito, 5 = Mosquito Magnum, 6 = LGX Mosquito, 7 = E3D REVO Micro
+#define LCDType         2    // 1 = None, 2 = RepRapLCD, 3 = Viki2, 4 = Mini 12864
 
-#define RunoutSensor        1  // filament runout sensor || 0 = disabled, 1 = enabled
-#define SensorlessHoming    0  // use TMC Stallguard instead of hardware endstops || 0 = disabled, 1 = enabled
-#define ConductiveBedProbe  0  // use conductive pad on heated bed for probe offset || 0 = disabled, 1 = enabled
-#define IndependentZMotors  1  // independent Z motor drivers for getting X axis parallel 
+#define RunoutSensor        0  // filament runout sensor                                   || 0 = disabled, 1 = enabled
+#define SensorlessHoming    0  // use TMC Stallguard instead of hardware endstops          || 0 = disabled, 1 = enabled
+#define ConductiveBedProbe  0  // use conductive pad on heated bed for probe offset        || 0 = disabled, 1 = enabled
+#define IndependentZMotors  0  // independent Z motor drivers for getting X axis parallel  || 0 = disabled, 1 = enabled
+#define DualExtrusion       0  // Dual Extrusion                                           || 0 = disabled, 1 = enabled
+#define Fan5v               0  // 5v cooling fan                                           || 0 = 24v Part Fan 1 = 5v fan
 
 #if BoardPlatform == 1
   #define MODEL_LETTER ""
@@ -141,7 +143,11 @@
 
 // This defines the number of extruders
 // :[0, 1, 2, 3, 4, 5, 6, 7, 8]
-#define EXTRUDERS 1
+#if DualExtrusion == 1
+  #define EXTRUDERS 2
+#else
+  #define EXTRUDERS 1
+#endif
 
 // Generally expected filament diameter (1.75, 2.85, 3.0, ...). Used for Volumetric, Filament Width Sensor, etc.
 #define DEFAULT_NOMINAL_FILAMENT_DIA 1.75
@@ -287,7 +293,11 @@
  *
  */
 #define TEMP_SENSOR_0 5
-#define TEMP_SENSOR_1 0
+#if DualExtrusion == 1
+  #define TEMP_SENSOR_1 5
+#else
+  #define TEMP_SENSOR_1 0
+#endif
 #define TEMP_SENSOR_2 0
 #define TEMP_SENSOR_3 0
 #define TEMP_SENSOR_4 0
@@ -374,7 +384,7 @@
 #elif HotEndType == 5
   #define HEATER_0_MAXTEMP 315
   #define BED_MAXTEMP 125
-  #define Z_MAX_POS 205
+  #define Z_MAX_POS 215
   #define DEFAULT_Kp 18
   #define DEFAULT_Ki 2.22
   #define DEFAULT_Kd 55
@@ -384,18 +394,28 @@
   #define Z_MAX_POS 205
   #define DEFAULT_Kp 18
   #define DEFAULT_Ki 2.22
-  #define DEFAULT_Kd 55  
+  #define DEFAULT_Kd 55
+#elif HotEndType == 7
+  #define HEATER_0_MAXTEMP 315
+  #define BED_MAXTEMP 125
+  #define Z_MAX_POS 215
+  #define DEFAULT_Kp 18
+  #define DEFAULT_Ki 2.22
+  #define DEFAULT_Kd 55    
 #endif
 
 
+#if DualExtrusion == 1
+  #define HEATER_1_MAXTEMP 315
+#endif
 
-#define HEATER_1_MAXTEMP 275
-#define HEATER_2_MAXTEMP 275
-#define HEATER_3_MAXTEMP 275
-#define HEATER_4_MAXTEMP 275
-#define HEATER_5_MAXTEMP 275
-#define HEATER_6_MAXTEMP 275
-#define HEATER_7_MAXTEMP 275
+
+// #define HEATER_2_MAXTEMP 275
+// #define HEATER_3_MAXTEMP 275
+// #define HEATER_4_MAXTEMP 275
+// #define HEATER_5_MAXTEMP 275
+// #define HEATER_6_MAXTEMP 275
+// #define HEATER_7_MAXTEMP 275
 
 
 
@@ -624,7 +644,7 @@
   #define X_MIN_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
   #define Y_MIN_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
   #define Z_MIN_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
-  #define X_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
+  #define X_MAX_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
   #define Y_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
   #define Z_MAX_ENDSTOP_INVERTING true  // Set to true to invert the logic of the endstop.
   #define Z_MIN_PROBE_ENDSTOP_INVERTING false // Set to true to invert the logic of the probe. 
@@ -648,6 +668,11 @@
 #if BoardPlatform == 3 && IndependentZMotors == 1
   #define Z2_DRIVER_TYPE TMC2209
 #endif
+
+#if BoardPlatform == 3 && DualExtrusion == 1
+  #define E1_DRIVER_TYPE TMC2209
+#endif
+
 
 // @section motion
 
@@ -1088,7 +1113,7 @@
 // The size of the printable area
 #if ConductiveBedProbe == 1 
   #define X_BED_SIZE 250
-  #define Y_BED_SIZE 220
+  #define Y_BED_SIZE 255
   #define X_MIN_POS 0
   #define Y_MIN_POS 0
   #define Z_MIN_POS 0
@@ -1159,7 +1184,7 @@
 
 
 #if ENABLED(FILAMENT_RUNOUT_SENSOR)
-  #define FIL_RUNOUT_ENABLED_DEFAULT true // Enable the sensor on startup. Override with M412 followed by M500.
+  #define FIL_RUNOUT_ENABLED_DEFAULT false // Enable the sensor on startup. Override with M412 followed by M500.
   #define NUM_RUNOUT_SENSORS   1          // Number of sensors, up to one per extruder. Define a FIL_RUNOUT#_PIN for each.
   #define FIL_RUNOUT_STATE     LOW        // Pin state indicating that filament is NOT present.
   //#define FIL_RUNOUT_PULLUP               // Use internal pullup for filament runout pins.
@@ -2657,14 +2682,14 @@
   //#define NEOPIXEL2_PIN    5
   #define NEOPIXEL_PIXELS 3       // Number of LEDs in the strip. (Longest strip when NEOPIXEL2_SEPARATE is disabled.)
   #define NEOPIXEL_IS_SEQUENTIAL   // Sequential display for temperature change - LED by LED. Disable to change all LEDs at once.
-  #define NEOPIXEL_BRIGHTNESS 127  // Initial brightness (0-255)
+  #define NEOPIXEL_BRIGHTNESS 255  // Initial brightness (0-255)
   //#define NEOPIXEL_STARTUP_TEST  // Cycle through colors at startup
 
   // Support for second Adafruit NeoPixel LED driver controlled with M150 S1 ...
   //#define NEOPIXEL2_SEPARATE
   #if ENABLED(NEOPIXEL2_SEPARATE)
     #define NEOPIXEL2_PIXELS      15  // Number of LEDs in the second strip
-    #define NEOPIXEL2_BRIGHTNESS 127  // Initial brightness (0-255)
+    #define NEOPIXEL2_BRIGHTNESS 255  // Initial brightness (0-255)
     #define NEOPIXEL2_STARTUP_TEST    // Cycle through colors at startup
   #else
     //#define NEOPIXEL2_INSERIES      // Default behavior is NeoPixel 2 in parallel
