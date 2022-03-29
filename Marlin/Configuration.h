@@ -27,15 +27,16 @@
 
 #define BoardPlatform   3    // 1 = Einsy RAMBo, 2 = Azteeg X5 GT 3 = SKR Turbo
 #define ExtruderType    4    // 1 = EZR, 2 = Bondtech QR 1.75mm, 3 = Bondtech QR 3mm, 4 = Bondtech BMG, 5 = LDO Orbiter 1.75mm, 6 = Bondtech LGX
-#define HotEndType      2    // 1 = E3D Lite6, 2 = E3Dv6 , 3 = E3D Volcano, 4 = Mosquito, 5 = Mosquito Magnum, 6 = LGX Mosquito, 7 = E3D REVO Micro
-#define LCDType         2    // 1 = None, 2 = RepRapLCD, 3 = Viki2, 4 = Mini 12864
+#define HotEndType      4    // 1 = E3D Lite6, 2 = E3Dv6 , 3 = E3D Volcano, 4 = Mosquito, 5 = Mosquito Magnum, 6 = LGX Mosquito, 7 = E3D REVO Micro
+#define LCDType         4    // 1 = None, 2 = RepRapLCD, 3 = Viki2, 4 = Mini 12864
 
-#define RunoutSensor        0  // filament runout sensor                                   || 0 = disabled, 1 = enabled
+#define RunoutSensor        1  // filament runout sensor                                   || 0 = disabled, 1 = enabled
 #define SensorlessHoming    0  // use TMC Stallguard instead of hardware endstops          || 0 = disabled, 1 = enabled
 #define ConductiveBedProbe  0  // use conductive pad on heated bed for probe offset        || 0 = disabled, 1 = enabled
 #define IndependentZMotors  0  // independent Z motor drivers for getting X axis parallel  || 0 = disabled, 1 = enabled
 #define DualExtrusion       0  // Dual Extrusion                                           || 0 = disabled, 1 = enabled
-#define Fan5v               0  // 5v cooling fan                                           || 0 = 24v Part Fan 1 = 5v fan
+#define Fan5v               1  // 5v cooling fan                                           || 0 = 24v Part Fan, 1 = 5v fan
+#define LEDring             0  // WS2912 x12 LED Ring                                      || 0 = disabled, 1 = enabled
 
 #if BoardPlatform == 1
   #define MODEL_LETTER ""
@@ -1186,7 +1187,7 @@
 #if ENABLED(FILAMENT_RUNOUT_SENSOR)
   #define FIL_RUNOUT_ENABLED_DEFAULT false // Enable the sensor on startup. Override with M412 followed by M500.
   #define NUM_RUNOUT_SENSORS   1          // Number of sensors, up to one per extruder. Define a FIL_RUNOUT#_PIN for each.
-  #define FIL_RUNOUT_STATE     LOW        // Pin state indicating that filament is NOT present.
+  #define FIL_RUNOUT_STATE     HIGH        // Pin state indicating that filament is NOT present.
   //#define FIL_RUNOUT_PULLUP               // Use internal pullup for filament runout pins.
   #define FIL_RUNOUT_PULLDOWN           // Use internal pulldown for filament runout pins.
   //#define WATCH_ALL_RUNOUT_SENSORS      // Execute runout script on any triggering sensor, not only for the active extruder.
@@ -2686,13 +2687,13 @@
   //#define NEOPIXEL_STARTUP_TEST  // Cycle through colors at startup
 
   // Support for second Adafruit NeoPixel LED driver controlled with M150 S1 ...
-  //#define NEOPIXEL2_SEPARATE
-  #if ENABLED(NEOPIXEL2_SEPARATE)
-    #define NEOPIXEL2_PIXELS      15  // Number of LEDs in the second strip
-    #define NEOPIXEL2_BRIGHTNESS 255  // Initial brightness (0-255)
-    #define NEOPIXEL2_STARTUP_TEST    // Cycle through colors at startup
-  #else
-    //#define NEOPIXEL2_INSERIES      // Default behavior is NeoPixel 2 in parallel
+  #if LEDring == 1
+    #define NEOPIXEL2_SEPARATE
+      #define NEOPIXEL2_TYPE NEO_GRB
+      #define NEOPIXEL2_PIXELS          12  // Number of LEDs in the second strip
+      #define NEOPIXEL2_BRIGHTNESS     255  // Initial brightness (0-255)
+      // #define NEOPIXEL2_STARTUP_TEST     // Cycle through colors at startup
+    #else
   #endif
 
   // Use some of the NeoPixel LEDs for static (background) lighting

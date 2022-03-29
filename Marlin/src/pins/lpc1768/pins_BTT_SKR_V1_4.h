@@ -358,8 +358,8 @@
 //
 // Neopixel LED
 //
-#ifndef NEOPIXEL_PIN
-  #define NEOPIXEL_PIN                     P1_24
+#if LEDring == 1
+  #define NEOPIXEL2_PIN                    P1_24
 #endif
 
 /**

@@ -1353,7 +1353,7 @@
    *
    * :['SPI_HALF_SPEED', 'SPI_QUARTER_SPEED', 'SPI_EIGHTH_SPEED']
    */
-  //#define SD_SPI_SPEED SPI_HALF_SPEED
+  // #define SD_SPI_SPEED SPI_HALF_SPEED
 
   // The standard SD detect circuit reads LOW when media is inserted and HIGH when empty.
   // Enable this option and set to HIGH if your SD cards are incorrectly detected.
@@ -2144,8 +2144,8 @@
  *
  * Override the default value based on the driver type set in Configuration.h.
  */
-//#define MINIMUM_STEPPER_POST_DIR_DELAY 650
-//#define MINIMUM_STEPPER_PRE_DIR_DELAY 650
+#define MINIMUM_STEPPER_POST_DIR_DELAY 20
+#define MINIMUM_STEPPER_PRE_DIR_DELAY 20
 
 /**
  * Minimum stepper driver pulse width (in µs)
@@ -2158,7 +2158,7 @@
  *
  * Override the default value based on the driver type set in Configuration.h.
  */
-//#define MINIMUM_STEPPER_PULSE 2
+#define MINIMUM_STEPPER_PULSE 0
 
 /**
  * Maximum stepping rate (in Hz) the stepper driver allows
@@ -2172,7 +2172,7 @@
  *
  * Override the default value based on the driver type set in Configuration.h.
  */
-//#define MAXIMUM_STEPPER_RATE 250000
+#define MAXIMUM_STEPPER_RATE 5000000
 
 // @section temperature
 
@@ -2683,7 +2683,7 @@
       #define Z_CHAIN_POS      0
     #endif
     #if AXIS_IS_TMC(E0)
-      #define E0_CURRENT       600
+      #define E0_CURRENT       500
       #define E0_MICROSTEPS    16
       #define E0_RSENSE        0.10
       #define E0_CHAIN_POS     0
@@ -2770,11 +2770,13 @@
    * The default SW SPI pins are defined the respective pins files,
    * but you can override or define them here.
    */
-  //#define TMC_USE_SW_SPI
-  //#define TMC_SW_MOSI       -1
-  //#define TMC_SW_MISO       -1
-  //#define TMC_SW_SCK        -1
-
+    #if BoardPlatform == 2 && LCDType == 3
+       #define TMC_USE_SW_SPI
+       #define TMC_SW_MOSI       SD_MOSI_PIN
+       #define TMC_SW_MISO       SD_MISO_PIN
+       #define TMC_SW_SCK        SD_SCK_PIN
+    #endif
+ 
   /**
    * Four TMC2209 drivers can use the same HW/SW serial port with hardware configured addresses.
    * Set the address using jumpers on pins MS1 and MS2.
@@ -2902,12 +2904,11 @@
     #define HYBRID_THRESHOLD
   #endif
 
-#ifdef HYBRID_THRESHOLD
   #define X_HYBRID_THRESHOLD     100  // [mm/s]
   #define Y_HYBRID_THRESHOLD     100
   #define Z_HYBRID_THRESHOLD      25
   #define E0_HYBRID_THRESHOLD      5
-#endif  
+  
 
 #if IndependentZMotors == 1
   #define Z2_HYBRID_THRESHOLD      25
@@ -3229,8 +3230,9 @@
 // I2C Master ID for LPC176x LCD and Digital Current control
 // Does not apply to other peripherals based on the Wire library.
 //
-//#define I2C_MASTER_ID  1  // Set a value from 0 to 2
-
+#if BoardPlatform == 2 || BoardPlatform == 3
+   #define I2C_MASTER_ID  0  // Set a value from 0 to 2
+#endif
 /**
  * TWI/I2C BUS
  *
@@ -3259,7 +3261,7 @@
  * echo:i2c-reply: from:99 bytes:5 data:hello
  */
 
-//#define EXPERIMENTAL_I2CBUS
+// #define EXPERIMENTAL_I2CBUS
 #if ENABLED(EXPERIMENTAL_I2CBUS)
   #define I2C_SLAVE_ADDRESS  0  // Set a value from 8 to 127 to act as a slave
 #endif
@@ -3584,7 +3586,9 @@
  * that stepper drivers are properly plugged in before applying power.
  * Disable protection if your stepper drivers don't support the feature.
  */
-//#define DISABLE_DRIVER_SAFE_POWER_PROTECT
+#if BoardPlatform == 3
+  #define DISABLE_DRIVER_SAFE_POWER_PROTECT
+#endif
 
 /**
  * CNC Coordinate Systems
